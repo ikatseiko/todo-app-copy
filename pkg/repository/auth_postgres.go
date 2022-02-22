@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/ikatseiko/todo-app-copy"
 	"github.com/jmoiron/sqlx"
 )
@@ -13,6 +14,13 @@ func NewAuthPostgres(db *sqlx.DB) *AuthPostgres {
 	return &AuthPostgres{db: db}
 }
 
-func (s *AuthPostgres) CreateUser(user todo.User) (int, error) {
-	return 0, nil
+func (r *AuthPostgres) CreateUser(user todo.User) (int, error) {
+	var id int
+	query := fmt.Sprintf("INSERT INTO %s (name, username, password_hash) values($1,$2,$3) RETURNING id", usersTable)
+	row := r.db.QueryRow(query, user.Name, user.Username, user.Password)
+	err := row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
