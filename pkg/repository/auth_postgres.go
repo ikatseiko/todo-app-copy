@@ -33,5 +33,5 @@ func (r *AuthPostgres) GetUser(username, password string) (todo.User, error) {
 	if err != nil {
 		return todo.User{}, errors.New("GetUser | " + err.Error())
 	}
-	return todo.User{}, nil
+	return user, nil
 }
