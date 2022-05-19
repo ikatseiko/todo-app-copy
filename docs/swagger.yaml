@@ -5,6 +5,13 @@ definitions:
       message:
         type: string
     type: object
+  handler.getAllItemsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/todo.TodoItem'
+        type: array
+    type: object
   handler.getAllListsResponse:
     properties:
       data:
@@ -27,6 +34,19 @@ definitions:
       status:
         type: string
     type: object
+  todo.TodoItem:
+    properties:
+      description:
+        type: string
+      done:
+        type: boolean
+      id:
+        type: integer
+      title:
+        type: string
+    required:
+    - title
+    type: object
   todo.TodoList:
     properties:
       description:
@@ -37,6 +57,15 @@ definitions:
         type: string
     required:
     - title
+    type: object
+  todo.UpdateItemInput:
+    properties:
+      description:
+        type: string
+      done:
+        type: boolean
+      title:
+        type: string
     type: object
   todo.UpdateListInput:
     properties:
@@ -65,6 +94,129 @@ info:
   title: Todo App API
   version: "1.0"
 paths:
+  /api/items/{id}:
+    delete:
+      description: delete todo Item
+      operationId: delete-item
+      parameters:
+      - description: item id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteItem
+      tags:
+      - items
+  /api/items/{item_id}:
+    get:
+      consumes:
+      - application/json
+      description: get todo Item
+      operationId: get-item-by-id
+      parameters:
+      - description: item id
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/todo.TodoItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: GetItemByID
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: update todo Item
+      operationId: update-item
+      parameters:
+      - description: item id
+        in: path
+        name: item_id
+        required: true
+        type: integer
+      - description: item info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/todo.UpdateItemInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateItem
+      tags:
+      - items
   /api/lists:
     get:
       consumes:
@@ -216,7 +368,7 @@ paths:
       summary: GetListByID
       tags:
       - lists
-    post:
+    put:
       consumes:
       - application/json
       description: update todo list
@@ -261,6 +413,91 @@ paths:
       summary: UpdateList
       tags:
       - lists
+  /api/lists/{id}/items:
+    get:
+      consumes:
+      - application/json
+      description: get all todo items
+      operationId: get-all-items
+      parameters:
+      - description: list id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllItemsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: GetAllItems
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: create todo item
+      operationId: create-item
+      parameters:
+      - description: list id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: item info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/todo.TodoItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: CreateItem
+      tags:
+      - items
   /auth/sign-in:
     post:
       consumes:

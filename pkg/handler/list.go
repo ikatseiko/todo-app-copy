@@ -119,7 +119,7 @@ func (h *Handler) getListByID(ctx *gin.Context) {
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/lists/{id} [post]
+// @Router /api/lists/{id} [put]
 func (h *Handler) updateList(ctx *gin.Context) {
 	userID, err := getUserID(ctx)
 	if err != nil {
